@@ -2,11 +2,9 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:socket_io_common/src/util/event_emitter.dart';
 import 'package:whatsappclone/data/fake_chats.dart';
 import 'package:whatsappclone/models/message_model.dart';
 import 'package:whatsappclone/screens/login_screen.dart';
-
 import '../widgets/message_bubble.dart';
 import '../widgets/show_modal_sheet.dart';
 
@@ -24,6 +22,7 @@ class _ChatScreenState extends State<ChatScreen> {
   TextEditingController controller = TextEditingController();
   FocusNode focusNode = FocusNode();
   late IO.Socket socket;
+  ScrollController scrollController = ScrollController();
 
   void toggleEmoji() {
     focusNode.unfocus();
@@ -46,6 +45,9 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
 
+    if (scrollController.hasClients)
+       scrollController.animateTo(scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300), curve: Curves.easeOut);
       connect();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
@@ -73,7 +75,7 @@ void receiveMessage(dynamic data){
     
     
     setState(() {
-          messages.add(message);
+          messages.insert(0,message);
 
     });
     
@@ -186,6 +188,7 @@ void receiveMessage(dynamic data){
                 bottom: MediaQuery.of(context).size.height * 0.08,
                 child: ListView.builder(
                   reverse: true,
+                  controller: scrollController,
                   shrinkWrap: true,
                   itemCount: messages.length,
                   itemBuilder: (BuildContext context, int index) {
@@ -266,11 +269,18 @@ void receiveMessage(dynamic data){
                     onPressed: (){
                     if(!isTextEmpty)
                       
-                      messages.add(MessageModel(controller.text, DateTime.now(), 2, true, ));
+                      
                     
+
                       socket.emit("message",{"message":controller
                       .text , "senderId" : sourceChat.id, "targetId" :widget.targetId});
+
+                      if (scrollController.hasClients)scrollController.animateTo(scrollController.position.minScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+
+                    setState(() {
+                      messages.insert(0,MessageModel(controller.text, DateTime.now(), 2, true, ));
                     controller.clear();
+                    });
                     },
                     icon: Icon(
                       isTextEmpty ? Icons.mic : Icons.send,
