@@ -1,12 +1,20 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:developer';
 
 import '../../widgets/caption_box.dart';
 
+
+ 
+
+
 class ImageViewScreen extends StatelessWidget {
-  const ImageViewScreen({super.key, required this.path});
-  final String path;
+  const ImageViewScreen({super.key, required this.image,required this.onSendImage, required this.pop});
+  final XFile image;
+final Function? onSendImage;
+final int pop;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,16 +61,35 @@ class ImageViewScreen extends StatelessWidget {
         ],
       ),
       body: Stack(children: [
-        SizedBox(
+        Container(
+          color: Colors.black,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: Image.file(
-            File(path),
-            fit: BoxFit.cover,
+            File(image.path),
+            fit: BoxFit.contain,
           ),
         ),
-        const CaptionBox()
+        CaptionBox(
+          onTap: (){
+
+            try {
+
+              log(image.name);
+
+              onSendImage!(context,image,pop);
+            } catch (e) {
+              log(e.toString());
+            }
+
+           
+          },
+        )
       ]),
     );
   }
+
+
+
+
 }

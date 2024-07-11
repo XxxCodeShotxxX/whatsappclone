@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,8 +10,14 @@ class MessageBubble extends StatelessWidget {
     required this.messageContent,
     required this.messageStatus,
     required this.messageDate,
+    required this.isImage,
+    this.imagePath,
+    this.imageName,
   });
   final bool isSenderByCurrentUser;
+  final bool isImage;
+  final String? imagePath;
+  final String? imageName;
   final String messageContent;
   final int messageStatus;
   final DateTime messageDate;
@@ -22,6 +30,7 @@ class MessageBubble extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.8,
+          maxHeight: MediaQuery.of(context).size.height * 0.5,
         ),
         child: Stack(children: [
           Card(
@@ -30,10 +39,24 @@ class MessageBubble extends StatelessWidget {
                 ? const Color.fromARGB(255, 225, 252, 196)
                 : Colors.white,
             child: Padding(
-              padding: const EdgeInsets.only(left: 10, right: 40, top: 5, bottom: 20),
-              // ignore: prefer_const_constructors
-              child: Text(messageContent, style: TextStyle(fontSize: 16)),
-            ),
+                padding: const EdgeInsets.only(
+                    left: 10, right: 40, top: 5, bottom: 20),
+                // ignore: prefer_const_constructors
+                child: isSenderByCurrentUser
+                    ? !isImage
+                        ? Text(messageContent,
+                            style: const TextStyle(fontSize: 16))
+                        : Image.file(
+                            File(imagePath!),
+                            fit: BoxFit.contain,
+                          )
+                    : !isImage
+                        ? Text(messageContent,
+                            style: const TextStyle(fontSize: 16))
+                        : Image.network(
+                            "http://192.168.1.69:5000/images/$imageName",
+                            fit: BoxFit.contain,
+                          )),
           ),
           Positioned(
             bottom: 4,

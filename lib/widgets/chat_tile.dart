@@ -1,57 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:whatsappclone/models/chat_model.dart';
+import 'package:whatsappclone/models/user_model.dart';
 import 'package:whatsappclone/screens/chat_screen.dart';
 
 class ChatTile extends StatelessWidget {
   const ChatTile({
     super.key,
-    required this.chatModel,
+    required this.friend, required this.currentUser,
   });
-  final ChatModel chatModel;
+  final User friend;
+  final User currentUser;
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) =>  ChatScreen(
-              targetId: chatModel.id,
+              friend: friend,
+              currentUser: currentUser,
             )));
       },
       child: Column(
         children: [
           ListTile(
             title: Text(
-              chatModel.name,
+              friend.userName,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            subtitle: Row(
+            subtitle: const Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.done_all,
                   size: 13,
                 ),
                 Flexible(
                     child: Text(
-                  chatModel.lastMessage,
+                  "Culpa eiusmod voluptate exercitation eu officia amet nostrud commodo in sunt aute aliquip reprehenderit.",
                   overflow: TextOverflow.ellipsis,
                 )),
               ],
             ),
-            leading: CircleAvatar(
-              radius: 30,
-              child: SvgPicture.asset(
-                chatModel.isGroup
-                    ? "assets/icons/groups.svg"
-                    : "assets/icons/person.svg",
-                // ignore: deprecated_member_use
-                color: Colors.white,
-                height: 38,
-                width: 38,
-              ),
+            leading: Stack(
+              children: [CircleAvatar(
+                radius: 30,
+                child: SvgPicture.asset(
+                  false
+                      ? "assets/icons/groups.svg"
+                      : "assets/icons/person.svg",
+                  // ignore: deprecated_member_use
+                  color: Colors.white,
+                  height: 38,
+                  width: 38,
+                ),
+              ), Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: CircleAvatar(radius: 12, backgroundColor: friend.isOnline? Colors.green : Colors.grey,))]
             ),
-            trailing: Text(DateFormat('hh:mm').format(chatModel.time)),
+            trailing: Text(DateFormat('hh:mm').format(DateTime.now())),
           ),
           const Padding(
             padding: EdgeInsets.only(right: 20, left: 80),

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:whatsappclone/models/chat_model.dart';
+import 'package:whatsappclone/models/user_model.dart';
 
 class ContactTile extends StatefulWidget {
   const ContactTile({
     super.key,
-    required this.chatModel,
+    required this.user,
     this.onTap,
     required this.selectable,
   });
 
-  final ChatModel chatModel;
+  final User user;
   final bool selectable;
   final Function()? onTap;
 
@@ -68,14 +68,14 @@ class _ContactTileState extends State<ContactTile> {
             ]),
           ),
           title: Text(
-            widget.chatModel.name,
+            widget.user.userName,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          subtitle: Text(widget.chatModel.status),
+          subtitle: const Text("Labore consequat magna irure excepteur ullamco."),
         ),
       ),
     );

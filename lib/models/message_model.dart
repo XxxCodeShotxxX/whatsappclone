@@ -1,12 +1,20 @@
-
-
 class MessageModel {
-  
   String messageContent;
-  DateTime messageDate;
-  bool isSendedByCurrentUser;
-  int messageStatus;
+  String senderId;
+  String receiverId;
+  bool isImage;
+  String? imagePath;
+  String? imageName;
+  MessageModel(this.messageContent, this.senderId, this.receiverId,
+      this.isImage, this.imagePath, this.imageName);
 
-
-  MessageModel(this.messageContent,this.messageDate,this.messageStatus,this.isSendedByCurrentUser);
+  factory MessageModel.fromJson(Map<String, dynamic> json) {
+    return MessageModel(
+        json["message"] as String,
+        json["senderId"]as String,
+        json["receiverId"]as String,
+        json["isImage"] as bool,
+        json["imagePath"] as String?,
+        json["imageName"] as String?);
+  }
 }

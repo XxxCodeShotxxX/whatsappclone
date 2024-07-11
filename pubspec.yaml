@@ -44,6 +44,10 @@ dependencies:
   path: ^1.9.0
   video_player: ^2.9.1
   socket_io_client: ^2.0.3+1
+  http: ^1.2.1
+  image_picker: ^1.1.2
+  flutter_secure_storage: ^9.2.2
+  logger: ^2.3.0
 
 dev_dependencies:
   flutter_test:

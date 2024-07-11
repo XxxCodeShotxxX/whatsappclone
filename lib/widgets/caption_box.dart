@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class CaptionBox extends StatelessWidget {
   const CaptionBox({
-    super.key,
+    super.key, this.onTap,
   });
-
+  final Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -33,13 +33,16 @@ class CaptionBox extends StatelessWidget {
                 color: Colors.white,
                 fontSize: 17,
               ),
-              suffixIcon: CircleAvatar(
-                radius: 27,
-                backgroundColor: Colors.tealAccent[700],
-                child: const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 27,
+              suffixIcon: GestureDetector(
+                onTap: onTap,
+                child: CircleAvatar(
+                  radius: 27,
+                  backgroundColor: Colors.tealAccent[700],
+                  child: const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 27,
+                  ),
                 ),
               )),
         ),

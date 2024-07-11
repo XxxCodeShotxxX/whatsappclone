@@ -18,14 +18,14 @@ List<ChatModel> chats = [
       "Culpa cillum culpa aute velit labore aliqua laboris anim nisi veniam amet quis cupidatat.",
       "Labore sunt est anim qui pariatur duis."),
   ChatModel(3,
-      "Alex Smith",
+      "Hachem",
       const Icon(Icons.gamepad_outlined),
       false,
       DateTime.now(),
       "Culpa cillum culpa aute velit labore aliqua laboris anim nisi veniam amet quis cupidatat.",
       "Pariatur in eu esse dolore pariatur eiusmod nulla."),
   ChatModel(4,
-      "Walter White",
+      "Mohammed White",
       const Icon(Icons.gamepad_outlined),false,
       DateTime.now(),
       "Culpa cillum culpa aute velit labore aliqua laboris anim nisi veniam amet quis cupidatat.",
@@ -64,3 +64,5 @@ List<MessageModel> messages = [
   // MessageModel("okay , goodbye", DateTime(2024), 0, false),
   // MessageModel("okay , goodbye", DateTime(2024), 0, true),
 ];
+
+

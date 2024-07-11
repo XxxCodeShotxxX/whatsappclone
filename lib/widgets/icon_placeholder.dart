@@ -6,16 +6,17 @@ class IconPlaceholder extends StatelessWidget {
     required this.color,
     required this.icon,
     required this.title,
+    this.onTap
   });
 
   final Color color;
   final IconData icon;
   final String title;
-
+  final Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       child: Column(
         children: [
           CircleAvatar(

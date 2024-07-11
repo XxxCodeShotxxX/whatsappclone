@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: library_prefixes
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketTest extends StatefulWidget {
@@ -13,7 +14,6 @@ class _SocketTestState extends State<SocketTest> {
   String error = "fine";
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     connect();
   }
@@ -29,7 +29,7 @@ class _SocketTestState extends State<SocketTest> {
         body: Center(
             child: Text(
       error,
-      style: TextStyle(color: Colors.red),
+      style: const TextStyle(color: Colors.red),
     )));
   }
 }
