@@ -13,7 +13,7 @@
 			buildPhases = (
 				33CC111E2044C6BF0003C045 /* ShellScript */,
 			);
-			dependencies = (
+			= (
 			);
 			name = "Flutter Assemble";
 			productName = FLX;

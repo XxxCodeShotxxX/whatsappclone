@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:whatsappclone/models/chat_model.dart';
-import 'package:whatsappclone/models/message_model.dart';
+import 'package:whatsappclone/models/servermodel/chat_model.dart';
+import 'package:whatsappclone/models/servermodel/message_model.dart';
 
 List<ChatModel> chats = [
   ChatModel(1,

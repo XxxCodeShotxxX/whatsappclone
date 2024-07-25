@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:whatsappclone/models/user_model.dart';
+import 'package:whatsappclone/models/servermodel/user/user_model.dart';
 
 class ContactTile extends StatefulWidget {
   const ContactTile({
     super.key,
-    required this.user,
+
     this.onTap,
     required this.selectable,
   });
 
-  final User user;
+
   final bool selectable;
   final Function()? onTap;
 
@@ -68,7 +68,7 @@ class _ContactTileState extends State<ContactTile> {
             ]),
           ),
           title: Text(
-            widget.user.userName,
+            'widget.user.userName',
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontSize: 16,

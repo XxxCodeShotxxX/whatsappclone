@@ -11,7 +11,7 @@ Back End:
     read receipt;
     RELAY service/ Chat history;
     mongoDB connect;
-    
+    captions
 FUTURE:
     Group chat;
     Video and voice calls;
@@ -19,3 +19,4 @@ FUTURE:
     notifications;
     typing ... box;
 
+8b509a646e38127b4bce058a7d986c6641112f01922a29634bcdd595b093489f

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "652839600541",
+    "project_id": "whatnodejsflutter",
+    "storage_bucket": "whatnodejsflutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652839600541:android:6b47917ed0108d31b82f74",
+        "android_client_info": {
+          "package_name": "com.example.whatsappclone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQwFbOwqz0oS4RL-IAdu2xsarEcZ5Fh6A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

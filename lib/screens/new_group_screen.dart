@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:whatsappclone/data/fake_chats.dart';
-import 'package:whatsappclone/screens/login_screen.dart';
+import 'package:whatsappclone/screens/authentification/login_screen.dart';
 import 'package:whatsappclone/widgets/contact_tile.dart';
 
 class NewGroupScreen extends StatelessWidget {
@@ -49,7 +49,7 @@ class NewGroupScreen extends StatelessWidget {
           itemCount: chats.length,
           itemBuilder: (BuildContext context, int index) {
             return ContactTile(
-              user: userxs[index],
+              
               selectable: true,
             );
           }),

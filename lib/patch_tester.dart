@@ -1,67 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:whatsappclone/controllers/register_controller.dart';
+import 'package:whatsappclone/handlers/http_handler.dart';
 import 'package:whatsappclone/handlers/network_handler.dart';
 import 'package:whatsappclone/widgets/icon_placeholder.dart';
 
-class PatchTester extends StatefulWidget {
-  const PatchTester({super.key});
+class PatchTester extends StatelessWidget {
+   PatchTester({super.key});
 
-  @override
-  _PatchTesterState createState() => _PatchTesterState();
-}
-
-class _PatchTesterState extends State<PatchTester> {
   XFile? file;
+
   String status = "nothing";
-  final NetworkHandler networkHandler = NetworkHandler();
-  final TextEditingController controller = TextEditingController();
-  Future<void> pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    file = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      status = file != null ? "Image selected" : "No image selected";
-    });
-  }
 
-  Future<void> uploadImage() async {
-    if (file == null) {
-      setState(() {
-        status = "Please select an image first";
-      });
-      return;
-    }
+  final HttpHandler httpHandler = HttpHandler();
 
-    try {
-      var response = await networkHandler.postImage("routes/addImage", file!.path, file!.name);
-      if (response.statusCode == 200) {
-        setState(() {
-          status = "Image uploaded successfully";
-        });
-      } else {
-        setState(() {
-          status = "Failed to upload image: ${response.statusCode}";
-        });
-      }
-    } catch (e) {
-      setState(() {
-        status = "Error: $e ";
-        controller.text = e.toString();
-      });
-    }
-  }
+  final TextEditingController pcontroller = TextEditingController();
 
-
-  Future<void> online(String uid) async {
-
-
-    networkHandler.setOnline(uid);
-  }
-  Future<void> offline(String uid) async {
-
-
-    networkHandler.setOffline(uid);
-  }
-
+  final TextEditingController dcontroller = TextEditingController();
+  static RegisterController registerController = Get.put(RegisterController());
 
   @override
   Widget build(BuildContext context) {
@@ -70,33 +27,23 @@ class _PatchTesterState extends State<PatchTester> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Patch Tester'),
-            IconPlaceholder(
-              color: Colors.purple,
-              icon: Icons.insert_photo,
-              title: "Gallery",
-              onTap: pickImage,
+            Container(
+              color: Colors.grey[300],
+              child: TextField(
+                controller: dcontroller,
+              ),
             ),
-            TextButton(
-              onPressed: uploadImage,
-              child: const Text("Upload!"),
+            Container(
+              color: Colors.grey[300],
+              child: TextField(
+                controller: pcontroller,
+              ),
             ),
-            Text(
-              status,
-            ),
-            TextField(controller: controller),
-            TextButton(
-              onPressed: (){
-               if (controller.text.isNotEmpty) online(controller.text);
-              },
-              child: const Text("setOnline"),
-            ),
-            TextButton(
-              onPressed: (){
-               if (controller.text.isNotEmpty) offline(controller.text);
-              },
-              child: const Text("setOffline"),
-            ),
+            ElevatedButton(onPressed: 
+              (){
+              
+              }
+            , child: Text("ADD"))
           ],
         ),
       ),

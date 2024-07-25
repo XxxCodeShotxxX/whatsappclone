@@ -1,109 +1,163 @@
-import 'dart:io';
+import 'dart:developer';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:whatsappclone/handlers/network_handler.dart';
-import 'package:whatsappclone/models/user_model.dart';
+import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:whatsappclone/controllers/socket_controller.dart';
+import 'package:whatsappclone/controllers/user_controller.dart';
+import 'package:whatsappclone/keys/db_cnames.dart';
+import 'package:whatsappclone/models/localdbmodel/db_chat_list_model.dart';
+import 'package:whatsappclone/models/localdbmodel/db_message_model.dart';
 import 'package:whatsappclone/screens/Tabs/camera_tab.dart';
 import 'package:whatsappclone/screens/Tabs/chat_tab.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.currentUser, required this.users});
-  final User currentUser;
-    final List<User> users;
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _controller;
-  late IO.Socket socket;
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  final SocketController socketController = Get.put(
+    SocketController(),
+    permanent: true,
+  );
+  final UserController userController = Get.put(UserController());
+
+  double customTabBarHeight = 40;
 
   @override
   void initState() {
     super.initState();
-    _controller = TabController(length: 4, vsync: this, initialIndex: 1);
-    NetworkHandler  networkHandler =NetworkHandler();
-    networkHandler.setOnline(widget.currentUser.userId.toString());
+    WidgetsBinding.instance.addObserver(this);
+    socketController.connect();
   }
 
-
-  void connect() {
-    socket = IO.io("http://192.168.1.69:5000", <String, dynamic>{
-      "transports": ["websocket"],
-      "autoConnect": false,
-      "query": {
-        "senderId": widget.currentUser.userId,
-      }
-    });
-
-    socket.connect();
-    
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      userController.updateUserStatus(true);
+    } else {
+      userController.updateUserStatus(false);
     }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text(
-          "Whatsclone",
-          style: TextStyle(color: Colors.white),
+    return DefaultTabController(
+      length: 4,
+      initialIndex: 1,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: const Text(
+            "Whatsclone",
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Box<DbChatListModel> chatList =
+                      Hive.box<DbChatListModel>(DbCnames.chatList);
+                  chatList.add(DbChatListModel(
+                    message: "test",
+                    messageId: "555555",
+                    messageType: "text",
+                    unreadCount: 3,
+                    createdAt: DateTime.now(),
+                    tickCount: 1,
+                    userId: "66954c513f58abf28e4e731f",
+                  ));
+                },
+                icon: const Icon(
+                  Icons.search,
+                  color: Colors.white,
+                )),
+            PopupMenuButton(
+                onSelected: (value) {},
+                itemBuilder: (BuildContext context) {
+                  return [
+                    PopupMenuItem(
+                      child: const Text("clear all chat boxes"),
+                      onTap: () {
+                        Box<DbChatListModel> chatList =
+                            Hive.box<DbChatListModel>(DbCnames.chatList);
+                        chatList.clear();
+                      },
+                    ),
+                     PopupMenuItem(child: const Text("clear all messages boxes"),
+                      onTap: () {
+                        Box<DbMessageModel> message=
+                            Hive.box<DbMessageModel>(DbCnames.message);
+                        message.clear();
+                      },),
+                    const PopupMenuItem(child: Text("Whatsapp Web")),
+                    const PopupMenuItem(child: Text("Starred Messages")),
+                    const PopupMenuItem(child: Text("Setting")),
+                  ];
+                })
+          ],
+          bottom: PreferredSize(
+              preferredSize: Size.fromHeight(customTabBarHeight),
+              child: LayoutBuilder(builder: (context, constraints) {
+                final totalWidth = constraints.maxWidth / 2;
+                final cameraTabWidth =
+                    totalWidth * 0.1; // 20% of the total width
+                final otherTabWidth = (totalWidth - cameraTabWidth) /
+                    3; // Remaining width divided by 3
+
+                return TabBar(
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+                    tabs: [
+                      Container(
+                        height: customTabBarHeight,
+                        width: cameraTabWidth,
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.camera,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Container(
+                        height: customTabBarHeight,
+                        width: otherTabWidth,
+                        alignment: Alignment.center,
+                        child: const Text(
+                          "Chats",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      Container(
+                        height: customTabBarHeight,
+                        width: otherTabWidth,
+                        alignment: Alignment.center,
+                        child: const Text(
+                          "Status",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      Container(
+                        height: customTabBarHeight,
+                        width: otherTabWidth,
+                        alignment: Alignment.center,
+                        child: const Text(
+                          "Calls",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      )
+                    ]);
+              })),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.search,
-                color: Colors.white,
-              )),
-          PopupMenuButton(onSelected: (value) {
-            if (kDebugMode) {
-              print(value);
-            }
-          }, itemBuilder: (BuildContext context) {
-            return [
-              const PopupMenuItem(child: Text("New Group")),
-              const PopupMenuItem(child: Text("New broadcast")),
-              const PopupMenuItem(child: Text("Whatsapp Web")),
-              const PopupMenuItem(child: Text("Starred Messages")),
-              const PopupMenuItem(child: Text("Setting")),
-            ];
-          })
-        ],
-        bottom:
-            TabBar(labelColor: Colors.white, controller: _controller, tabs: const [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(
-              Icons.camera,
-              color: Colors.white,
-            ),
-          ),
-          Text(
-            "Chats",
-            style: TextStyle(color: Colors.white),
-          ),
-          Text(
-            "Status",
-            style: TextStyle(color: Colors.white),
-          ),
-          Text(
-            "Calls",
-            style: TextStyle(color: Colors.white),
-          )
-        ]),
-      ),
-      body: TabBarView(
-        controller: _controller,
-        children: [
-          const CameraTab(),
-          ChatTab(currentUser: widget.currentUser, users: widget.users),
-          const Text("status"),
-          const Text("calls"),
-        ],
+        body: const TabBarView(
+          children: [
+            CameraTab(),
+            ChatTab(),
+            Text("status"),
+            Text("calls"),
+          ],
+        ),
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:whatsappclone/data/fake_chats.dart';
-import 'package:whatsappclone/screens/login_screen.dart';
+import 'package:whatsappclone/screens/authentification/login_screen.dart';
 import '../widgets/contact_tile.dart';
 import '../widgets/new_contact_tile.dart';
 
@@ -67,7 +66,7 @@ class ContactsScreen extends StatelessWidget {
         ],
       ),
       body: ListView.builder(
-          itemCount: chats.length + 2,
+          itemCount:  2,
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
               return const NewContactTile(
@@ -81,7 +80,7 @@ class ContactsScreen extends StatelessWidget {
               );
             } else {
               return ContactTile(
-                  selectable: false, user: userxs[index - 2]);
+                  selectable: false);
             }
           }),
     );
