@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../widgets/caption_box.dart';
@@ -88,7 +89,9 @@ class _VideoViewScreenState extends State<VideoViewScreen> {
                     child: VideoPlayer(videoPlayerController),
                   )
                 : Container()),
-        const CaptionBox(),
+         CaptionBox(
+        controller: TextEditingController(),
+        ),
         Align(
           alignment: Alignment.center,
           child: GestureDetector(

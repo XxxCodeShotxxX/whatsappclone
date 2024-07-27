@@ -3,13 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 // ignore: library_prefixes
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:whatsappclone/controllers/chat_controller.dart';
 import 'package:whatsappclone/controllers/user_controller.dart';
 import 'package:whatsappclone/models/localdbmodel/db_chat_list_model.dart';
 
-import 'package:whatsappclone/models/servermodel/user/user_model.dart';
-import 'package:whatsappclone/screens/contacts_screen.dart';
 
 import '../../widgets/chat_tile.dart';
 

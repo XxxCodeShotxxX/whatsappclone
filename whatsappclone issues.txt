@@ -1,22 +1,19 @@
 Front End :
-    Landing Page;
-    OTP Screen;
-    Image layout;
     Call tab;
     Correct Colors;
     Video layout;
 Back End:
     voice messages;
-    docs/Video Upload; 
-    read receipt;
-    RELAY service/ Chat history;
-    mongoDB connect;
-    captions
+    docs/Video Upload;  
 FUTURE:
     Group chat;
     Video and voice calls;
-    online status / Last seen;
     notifications;
     typing ... box;
 
 8b509a646e38127b4bce058a7d986c6641112f01922a29634bcdd595b093489f
+
+
+
+
+

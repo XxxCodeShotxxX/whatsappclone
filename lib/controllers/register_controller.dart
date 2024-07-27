@@ -9,6 +9,7 @@ import 'package:whatsappclone/keys/sharedpref_keys.dart';
 import 'package:whatsappclone/models/servermodel/country_model.dart';
 import 'package:whatsappclone/models/servermodel/user/user_login_registration_model.dart';
 import 'package:whatsappclone/repository/user_repo.dart';
+import 'package:whatsappclone/routes/routes_names.dart';
 import 'package:whatsappclone/screens/authentification/otp_screen.dart';
 import 'package:whatsappclone/widgets/loading_box.dart';
 
@@ -132,14 +133,14 @@ late String codeVerificationId;
       dynamic response =
           await userRepo.userLoginRegister(phoneNumber.text, dialCode.text);
      
-     if (response != null) log("mog");
 
-       log("res : ${response.token}");
+
        if (response.runtimeType.toString().toLowerCase() ==
            "userloginregistrationmodel") {
-        log("userloginregistrationmodel");
+
          UserLoginRegistrationModel userData = response;
          await sharedprefHandler.writeString(SharedPrefKeys.authToken, userData.token.toString());
+         Get.offAllNamed(RoutesNames.initialProfileScreen);
        }
     } catch (e) {
       log("error -LoginToServer- : $e ");

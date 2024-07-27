@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class NoUserImage extends StatelessWidget {
   const NoUserImage({
-    Key? key,
+    super.key,
     this.containerSize = 48.0,
     this.iconSize = 35.0,
-  }) : super(key: key);
+  });
 
   final double containerSize;
   final double iconSize;

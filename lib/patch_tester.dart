@@ -3,8 +3,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:whatsappclone/controllers/register_controller.dart';
 import 'package:whatsappclone/handlers/http_handler.dart';
-import 'package:whatsappclone/handlers/network_handler.dart';
-import 'package:whatsappclone/widgets/icon_placeholder.dart';
+
 
 class PatchTester extends StatelessWidget {
    PatchTester({super.key});
@@ -43,7 +42,7 @@ class PatchTester extends StatelessWidget {
               (){
               
               }
-            , child: Text("ADD"))
+            , child: const Text("ADD"))
           ],
         ),
       ),

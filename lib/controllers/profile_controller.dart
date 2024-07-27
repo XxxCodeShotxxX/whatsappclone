@@ -18,9 +18,7 @@ class ProfileController extends GetxController {
           .obs;
 
   Future<void> uploadProfileImage() async {
-    SharedprefHandler().writeString("authToken",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Njk2YzFhMWNiNTMxOWQzOTk1NjcxNjciLCJpYXQiOjE3MjExNTYwMDF9.agmid6rRHalCuVsED4nhKzr-7f_mtKQmFrY6-fqMbaM");
-    XFile? imagePicker = await ImagePicker()
+     XFile? imagePicker = await ImagePicker()
         .pickImage(source: ImageSource.gallery, imageQuality: 30);
 
     if (imagePicker != null) {

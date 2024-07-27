@@ -22,7 +22,6 @@ class MessageList extends StatelessWidget {
             isSenderByCurrentUser: index % 2 == 0,
             messageContent: 'message',
             messageDate: DateTime.now(),
-            messageStatus: 2,
             isImage: false,
             imagePath: "p",
             imageName: "v",

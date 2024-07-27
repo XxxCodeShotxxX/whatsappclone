@@ -8,8 +8,6 @@ class CameraTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  CameraScreen(onSendImage: (context,path,pop){
-      log("path: $path - pop: $pop");
-    },);
+    return  CameraScreen();
   }
 }

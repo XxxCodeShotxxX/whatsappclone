@@ -1,20 +1,22 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:whatsappclone/controllers/chat_controller.dart';
+import 'package:whatsappclone/controllers/media_view_controller.dart';
+import 'package:whatsappclone/controllers/user_controller.dart';
 import 'dart:developer';
 
 import '../../widgets/caption_box.dart';
 
-
- 
-
-
 class ImageViewScreen extends StatelessWidget {
-  const ImageViewScreen({super.key, required this.image,required this.onSendImage, required this.pop});
+  const ImageViewScreen({super.key, required this.image, required this.userId});
   final XFile image;
-final Function? onSendImage;
-final int pop;
+  final String userId;
+  static final MediaViewController controller = Get.put(MediaViewController());
+  static final ChatController chatController = Get.put(ChatController());
+  static final UserController userController = Get.put( UserController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +27,7 @@ final int pop;
             color: Colors.white,
           ),
           onPressed: () {
-            Navigator.pop(context);
+            Get.back();
           },
         ),
         backgroundColor: Colors.black,
@@ -63,33 +65,26 @@ final int pop;
       body: Stack(children: [
         Container(
           color: Colors.black,
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+          width: Get.width,
+          height: Get.height,
           child: Image.file(
             File(image.path),
             fit: BoxFit.contain,
           ),
         ),
         CaptionBox(
-          onTap: (){
-
+          controller: controller.captionBoxController,
+          onTap: () {
             try {
-
-              log(image.name);
-
-              onSendImage!(context,image,pop);
+              log(controller.captionBoxController.text);
+              controller.sendImage(userId, image.path);
+              
             } catch (e) {
               log(e.toString());
             }
-
-           
           },
         )
       ]),
     );
   }
-
-
-
-
 }

@@ -3,8 +3,9 @@ import 'dart:developer';
 
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:whatsappclone/controllers/socket_controller.dart';
 import 'package:whatsappclone/controllers/user_controller.dart';
 import 'package:whatsappclone/keys/db_cnames.dart';
@@ -18,7 +19,6 @@ import 'package:whatsappclone/screens/chat_screen.dart';
 
 class ChatController extends GetxController {
   UserController userController = Get.put(UserController());
- // 
 
   Box<DbPendingMessageModel> pendingMessageBox =
       Hive.box<DbPendingMessageModel>(DbCnames.pendingMessage);
@@ -26,19 +26,21 @@ class ChatController extends GetxController {
   Box chatListBox = Hive.box<DbChatListModel>(DbCnames.chatList);
 
   ChatRepo chatRepo = ChatRepo();
- UserRepo userRepo = UserRepo();
+  UserRepo userRepo = UserRepo();
 
   RxBool userStatus = false.obs;
   RxBool mic = true.obs;
   TextEditingController messageTextField = TextEditingController();
-RxString textControllerValue = "".obs;
-  Future<void> pendingMessageCheck() async {
-     List<DbPendingMessageModel> pendingData = pendingMessageBox.values.toList();
-     log("${pendingData.length}");
-     for(var message in pendingData){
-        DbMessageModel? messageData = messageBox.get(message.messageId);
+  RxString textControllerValue = "".obs;
+  RxString lastSeenTime = "Last Seen : Today".obs;
 
-         MessageModel body = MessageModel(
+  Future<void> pendingMessageCheck() async {
+    List<DbPendingMessageModel> pendingData = pendingMessageBox.values.toList();
+    log("${pendingData.length}", name: "pendingMessageCheck");
+    for (var message in pendingData) {
+      DbMessageModel? messageData = messageBox.get(message.messageId);
+
+      MessageModel body = MessageModel(
         id: messageData!.id,
         message: messageData.message.isEmpty ? " " : messageData.message,
         senderId: messageData.senderId,
@@ -49,20 +51,22 @@ RxString textControllerValue = "".obs;
 
       var response = await chatRepo.sendMessage(body.toMap());
 
-      if (response.runtimeType.toString() == "Response")
+      if (response.runtimeType.toString() == "Response") {
         pendingMessageBox.delete(messageData.id);
-        log(messageData.id + " deleted from pendingMessageBox");
+      }
+      log("${messageData.id} deleted from pendingMessageBox");
     }
   }
 
   void navigateToChatDetailsScreen(String id, List<String> userImageName) {
-      setUnreadMessageToZero(id);
-      checkUserStatus(id);
+    setUnreadMessageToZero(id);
+    checkUserStatus(id);
 
-      messageTextField.text = "";
-      messageTextField.clear();
+    messageTextField.text = "";
+    messageTextField.clear();
 
-      Get.to(() => ChatScreen(userId: id, userName: userImageName[0],image: userImageName[1]));
+    Get.to(() => ChatScreen(
+        userId: id, userName: userImageName[0], image: userImageName[1]));
   }
 
   void setUnreadMessageToZero(String userId) {
@@ -76,52 +80,62 @@ RxString textControllerValue = "".obs;
     userController.getChatList();
   }
 
-  Future<void> checkUserStatus(String id) async { 
-
+  Future<void> checkUserStatus(String id) async {
     SocketController socketController = Get.put(SocketController());
-      
+
+    try {
       var result = await userRepo.getUserStatus(id);
+      if (result.runtimeType.toString() == 'Response') {
+        var data = jsonDecode(result.body);
 
-      try {
-        if (result.runtimeType.toString() == 'Response') {
-          var data = jsonDecode(result.body);
-          userStatus.value = data["status"] ?? false;
-        } else
-          log(result.runtimeType.toString());
-      } catch (e) {
-        log("error usersList $e");
+        userStatus.value = data['status'] ?? false;
+        if (!userStatus.value) {
+          lastSeenTime.value = lastSeenDateConverter(data['lastSeen']);
+        }
+      } else {
+        log("runtimeType -checkUserStatus-: ${result.runtimeType}");
       }
-      try {
-        String eventString = '/user_status$id';
+    } catch (e) {
+      log("error -checkUserStatus- $e");
+    }
 
-        socketController.socket
-            .on(eventString, (data) => userStatus.value = data ?? false);
-      } catch (e) {
-        log("status socket error $e");
-      }
+    try {
+      String eventString = '/user_status$id';
+
+      socketController.socket
+          .on(eventString, (data) => userStatus.value = data ?? false);
+    } catch (e) {
+      log("status socket error $e");
+    }
   }
 
-  void openedMessageUpdate(String id, from) {}
+  void openedMessageUpdate(String id, String senderId) {
+    DateTime currentDate = DateTime.now();
 
+    chatRepo.openedMessageUpdate({
+      "id": id,
+      "openedAt": currentDate.toIso8601String(),
+      "senderId": senderId
+    });
 
+    DbMessageModel? messageData = messageBox.get(id);
 
+    messageData?.openedAt = currentDate;
 
-
+    messageBox.put(id, messageData!);
+  }
   Future<void> sendMessage(String userId) async {
-    if (messageTextField.text.isEmpty)
+    if (messageTextField.text.isEmpty) {
       sendVoice();
-    else
+    } else {
       sendTextMessage(userId);
+    }
   }
-  
+
   void sendVoice() {}
-  
-  
-  
 
-
-  Future<void>  sendTextMessage(String userId)async{
-      String messageId =
+  Future<void> sendTextMessage(String userId) async {
+    String messageId =
         "${userController.userId.value}$userId${DateTime.now().microsecondsSinceEpoch}";
 
     String messageText = messageTextField.text;
@@ -129,20 +143,20 @@ RxString textControllerValue = "".obs;
     textControllerValue.value = "";
 
     DateTime currentDate = DateTime.now();
-      addToMessageDb(messageId, messageText, userId, currentDate);
+    addToMessageDb(messageId, messageText, userId, currentDate);
 
     addToPendingDb(messageId);
 
-    addToChatListDb(messageId, messageText, userId, currentDate);
+    addToChatListDb(messageId, messageText, userId, currentDate,);
 
     addToServer(messageId, messageText, userId, currentDate);
   }
 
-   void addToMessageDb(
+  void addToMessageDb(
     String messageId,
     String messageText,
     String userId,
-    DateTime currentDate,
+    DateTime currentDate,{String? filePath}
   ) {
     DbMessageModel data = DbMessageModel(
       id: messageId,
@@ -152,11 +166,12 @@ RxString textControllerValue = "".obs;
       createdAt: currentDate,
       receivedAt: null,
       openedAt: null,
-      messageType: "text",
-      filePath: "",
+      messageType:filePath != null ? "image" :"text",
+      filePath:filePath ?? "",
     );
     messageBox.put(messageId, data);
   }
+
   void addToPendingDb(String messageId) {
     DbPendingMessageModel pendingMessageModel =
         DbPendingMessageModel(messageId);
@@ -164,11 +179,12 @@ RxString textControllerValue = "".obs;
     pendingMessageBox.put(messageId, pendingMessageModel);
   }
 
-   void addToChatListDb(
+  void addToChatListDb(
     String messageId,
     String messageText,
     String userId,
-    DateTime currentDate,
+    DateTime currentDate,{
+      String? filePath}
   ) {
     DbChatListModel dbChatListModel = DbChatListModel(
         message: messageText,
@@ -176,63 +192,44 @@ RxString textControllerValue = "".obs;
         messageId: messageId,
         userId: userId,
         unreadCount: 0,
-        messageType: "text",
-        filePath: "",
+        messageType: filePath != null ? "image" : "text",
+        filePath: filePath ?? "",
         tickCount: 1);
 
     chatListBox.put(userId, dbChatListModel);
   }
 
+  Future<void> addToServer(
+  String messageId,
+  String messageText,
+  String userId,
+  DateTime currentDate, {String? filePath}
+) async {
+  MessageModel body = MessageModel(
+    id: messageId,
+    message: messageText,
+    senderId: userController.userId.value,
+    receiverId: userId,
+    createdAt: currentDate,
+    messageType: filePath != null ? "image" : "text",
+  );
 
-Future<void> addToServer(
-    String messageId,
-    String messageText,
-    String userId,
-    DateTime currentDate,
-  ) async {
-    MessageModel body = MessageModel(
-      id: messageId,
-      message: messageText,
-      senderId: userController.userId.value,
-      receiverId: userId,
-      createdAt: currentDate,
-      messageType: "text",
-    );
+  http.Response response;
 
-    var response = await chatRepo.sendMessage(body.toMap());
-
-    if (response.runtimeType.toString() == "Response")
-      pendingMessageBox.delete(messageId);
+  if(filePath == null) {
+    response = await chatRepo.sendMessage(body.toMap());
+  } else {
+    response = await chatRepo.sendImage(filePath, body.toMap());
   }
 
+  if (response.statusCode == 200) {
+    pendingMessageBox.delete(messageId);
+  }
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @override
+  @override
   void onInit() {
- messageTextField.addListener(() {
+    messageTextField.addListener(() {
       textControllerValue.value = messageTextField.text;
     });
     super.onInit();
@@ -242,5 +239,10 @@ Future<void> addToServer(
   void dispose() {
     messageTextField.dispose();
     super.dispose();
+  }
+
+  String lastSeenDateConverter(String lastSeen) {
+    DateTime date = DateTime.parse(lastSeen);
+    return "Last Seen : ${DateFormat("hh:mm a").format(date)}";
   }
 }

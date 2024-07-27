@@ -4,10 +4,10 @@ import 'package:whatsappclone/controllers/chat_controller.dart';
 
 class ChatUserHeader extends StatelessWidget {
   const ChatUserHeader({
-    Key? key,
+    super.key,
     required this.userName,
     required this.chatController,
-  }) : super(key: key);
+  });
 
   final String userName;
 
@@ -24,8 +24,9 @@ class ChatUserHeader extends StatelessWidget {
         Obx(() => chatController.userStatus.value
             ? const Text("Online",
                 style: TextStyle(fontSize: 12.0, color: Colors.white))
-            : const Text("offline",
-                style: TextStyle(fontSize: 12.0, color: Colors.white))),
+            : 
+             Text(chatController.lastSeenTime.value,
+                style: const TextStyle(fontSize: 12.0, color: Colors.white))),
       ],
     );
   }

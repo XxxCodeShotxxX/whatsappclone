@@ -1,55 +1,21 @@
-import 'dart:math';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:whatsappclone/main.dart';
-import 'package:whatsappclone/screens/camera/image_view_screen.dart';
-import 'package:whatsappclone/screens/camera/video_view_screen.dart';
+import 'package:get/get.dart';
+import 'package:whatsappclone/controllers/camera_controller.dart';
 
-class CameraScreen extends StatefulWidget {
-  const CameraScreen({super.key, required this.onSendImage});
-  final Function onSendImage;
-  @override
-  State<CameraScreen> createState() => _CameraScreenState();
-}
-
-class _CameraScreenState extends State<CameraScreen> {
-  late CameraController cameraController;
-  late Future<void> cameraValue;
-  bool isRecording = false;
-  bool flash = true;
-  double angle  = 0.2;
-  @override
-  void initState() {
-    super.initState();
-    cameraController = CameraController(cameras[0], ResolutionPreset.max);
-    cameraValue = cameraController.initialize();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    cameraController.dispose();
-  }
-
-  void takePic() async {
-    XFile image = await cameraController.takePicture();
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (builder) => ImageViewScreen(image: image,onSendImage: widget.onSendImage ,pop: 3,)));
-  }
-
+class CameraScreen extends StatelessWidget {
+  const CameraScreen({super.key});
+  static CameraGetController cameraController = Get.put(CameraGetController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: Stack(children: [
         FutureBuilder(
-            future: cameraValue,
+            future: cameraController.cameraValue,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                return CameraPreview(cameraController);
+                return CameraPreview(CameraGetController.controller);
               } else {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -60,78 +26,44 @@ class _CameraScreenState extends State<CameraScreen> {
           alignment: Alignment.bottomCenter,
           child: Container(
             color: const Color.fromARGB(255, 0, 0, 0),
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height / 6.5,
+            width: Get.width,
+            height: Get.height / 6.5,
             child: Column(
               children: [
                 Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      IconButton(
-                          onPressed: () {
-                            if (!flash){
-                            cameraController.setFlashMode(FlashMode.torch);
-                            setState(() {
-                              flash = true;
-                            });
-                            }
-                            else {
-                            cameraController.setFlashMode(FlashMode.off);
-                            setState(() {
-                              flash=false;
-                            });
-                            }
-
-                          },
+                      Obx(()=>IconButton(
+                          onPressed: cameraController.toggleFlash,
                           icon: Icon(
-                            flash ? Icons.flash_on : Icons.flash_off,
+                            cameraController.flash.value ? Icons.flash_on : Icons.flash_off,
                             size: 28,
                             color: Colors.white,
-                          )),
+                          )),),
                       GestureDetector(
-                        onTap: () {
-                          if (!isRecording) takePic();
-                        },
-                        onLongPress: () async {
-                          await cameraController.startVideoRecording();
-                          setState(() {
-                            isRecording = true;
-                          });
-                        },
-                        onLongPressUp: () async {
-                          setState(() {
-                            isRecording = false;
-                          });
-                          XFile video =
-                              await cameraController.stopVideoRecording();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (builder) =>
-                                      VideoViewScreen(path: video.path)));
-                        },
-                        child: Icon(
-                          isRecording
+                        onTap: cameraController.takePic,
+                        onLongPress: cameraController.startRec,
+                        onLongPressUp: cameraController.stopRec,
+                        child: Obx(() => Icon(
+                          cameraController.isRecording.value
                               ? Icons.radio_button_on
                               : Icons.panorama_fisheye,
                           size: 70,
-                          color: Colors.white,
-                        ),
+                          color:!cameraController.isRecording.value
+                              ? Colors.white : Colors.red,
+                        ),),
                       ),
-                       Transform.rotate(
-                       angle: angle,
+                       Obx(()=>Transform.rotate(
+                       angle: cameraController.angle.value,
                          child: IconButton(
-                            onPressed: (){
-                            setState(() {
-                              angle = angle + pi/2;
-                            });},
+                            onPressed: cameraController.rotateCamera,
                             icon: const Icon(
                               Icons.flip_camera_android,
                               size: 28,
                               color: Colors.white,
                             )),
-                       ),
+                       )),
                     ]),
                 const Text(
                   "Hold for video , tap for photo",

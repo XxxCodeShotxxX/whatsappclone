@@ -44,13 +44,16 @@ class ChatScreen extends StatelessWidget {
               IconButton(
                 padding: const EdgeInsets.only(right: 0),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Get.back();
                 },
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
+                icon: 
+                
+                  const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
+         
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: CircleAvatar(
@@ -65,19 +68,24 @@ class ChatScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          Icon(
-            Icons.camera,
-            color: Colors.white,
+          GestureDetector(
+          onTap: () {
+                  chatController.checkUserStatus(userId);
+                },
+            child: const Icon(
+              Icons.camera,
+              color: Colors.white,
+            ),
           ),
-          Padding(
+          const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Icon(
+            child: const Icon(
               Icons.call,
               color: Colors.white,
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(right: 6),
+            padding: const EdgeInsets.only(right: 6),
             child: GestureDetector(
               onTap: () {
                 Box<DbMessageModel> messages =
@@ -87,10 +95,10 @@ class ChatScreen extends StatelessWidget {
                     id: "aa",
                     message: "test",
                     senderId: "66a013ef67325a56b1d2ef34",
-                    receiverId: "66954c513f58abf28e4e731f",
+                    receiverId:userId,
                     createdAt: DateTime.now()));
               },
-              child: Icon(
+              child: const Icon(
                 Icons.more_vert,
                 color: Colors.white,
               ),

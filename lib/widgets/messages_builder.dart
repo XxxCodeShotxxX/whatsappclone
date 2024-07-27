@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:whatsappclone/controllers/chat_controller.dart';
 import 'package:whatsappclone/controllers/user_controller.dart';
@@ -46,21 +45,25 @@ class MessagesBuilder extends StatelessWidget {
                   left: 0,
                   right: 0,
                   child: ListView.separated(
-                  reverse: true,
+                      reverse: true,
                       itemBuilder: (BuildContext context, int index) {
-                      int  nIndex = data.length - index - 1;
+                        int nIndex = data.length - index - 1;
                         DbMessageModel message = data[nIndex];
 
                         if (message.senderId == userId &&
-                            message.openedAt == null)
+                            message.openedAt == null) {
                           chatController.openedMessageUpdate(
                               message.id, message.senderId);
+                        }
                         return MessageBubble(
                           messageContent: message.message,
                           isSenderByCurrentUser: message.receiverId == userId,
                           messageDate: message.createdAt,
-                          isImage: false,
-                          messageStatus: 2,
+                          isImage:
+                              message.messageType == "image" ? true : false,
+                          isOpened: message.openedAt != null,
+                          isReceived: message.receivedAt != null,
+                          imagePath: message.filePath,
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) =>

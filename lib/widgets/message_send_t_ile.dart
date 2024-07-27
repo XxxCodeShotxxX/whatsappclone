@@ -44,9 +44,9 @@ class MessageSendTile extends StatelessWidget {
                   maxLines: 5,
                   minLines: 1,
                   decoration: InputDecoration(
-                    prefixIcon: IconButton(
+                    prefixIcon: const IconButton(
                       onPressed: null,
-                      icon: const Icon(Icons.emoji_emotions),
+                      icon: Icon(Icons.emoji_emotions),
                     ),
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -56,9 +56,9 @@ class MessageSendTile extends StatelessWidget {
                             showModalBottomSheet(
                               backgroundColor: Colors.transparent,
                               context: context,
-                              builder: (builder) => ShowModalSheet(
-                                context: context, 
-                                onSendImage: () {},
+                              builder: (builder) =>  ShowModalSheet(
+                            userId: userId,
+                           
                               ),
                             );
                           },

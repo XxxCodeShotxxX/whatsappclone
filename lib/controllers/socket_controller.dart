@@ -21,7 +21,7 @@ class SocketController extends GetxController {
 
   Box messageBox = Hive.box<DbMessageModel>(DbCnames.message);
   Box chatListBox = Hive.box<DbChatListModel>(DbCnames.chatList);
-  ChatRepo chatRepo= ChatRepo();
+  ChatRepo chatRepo = ChatRepo();
 
   String token = "";
 
@@ -43,9 +43,6 @@ class SocketController extends GetxController {
       log("Connected to socket $data");
       userController.getMyDetails();
       chatController.pendingMessageCheck();
-      log(SharedprefHandler()
-          .readString(SharedPrefKeys.userDetails)
-          .toString());
     });
 
     socket.onConnectError(_connectionError);
@@ -53,6 +50,8 @@ class SocketController extends GetxController {
     socket.onError(_connectionError);
 
     socket.on("message", message);
+    socket.on("messageReceived", messageReceived);
+    socket.on("messageOpened", messageOpened);
   }
 
   void _connectionError(dynamic data) {
@@ -66,11 +65,10 @@ class SocketController extends GetxController {
     addToMessageDb(messageModel, currentDateTime);
     addToChatList(messageModel, currentDateTime);
 
-
     chatRepo.receivedMessageUpdate({
       "id": messageModel.id,
       "receivedAt": currentDateTime.toIso8601String(),
-      "fromId": messageModel.senderId
+      "senderId": messageModel.senderId
     });
     userController.getChatList();
   }
@@ -109,5 +107,38 @@ class SocketController extends GetxController {
         tickCount: 0);
 
     chatListBox.put(messageModel.senderId, dbChatListModel);
+  }
+
+  void messageReceived(data) {
+  log(data.toString() , name:"onMessageReceived");
+    String messageId = data["messageId"];
+    DateTime receivedDate = DateTime.fromMillisecondsSinceEpoch(data["receivedAt"]);
+
+    //update message db
+    DbMessageModel messageData = messageBox.get(messageId);
+    messageData.receivedAt = receivedDate;
+    messageBox.put(messageId, messageData);
+
+    //update chat list count
+    DbChatListModel chatData = chatListBox.get(messageData.receiverId);
+    chatData.tickCount = 2;
+    chatListBox.put(messageData.receiverId, chatData);
+    userController.getChatList();
+  }
+
+  void messageOpened(data) {
+    String messageId = data["messageId"];
+    DateTime openedDate = DateTime.fromMillisecondsSinceEpoch(data["openedAt"]);
+
+    //update message db
+    DbMessageModel messageData = messageBox.get(messageId);
+    messageData.openedAt = openedDate;
+    messageBox.put(messageId, messageData);
+
+    //update chat list count
+    DbChatListModel chatData = chatListBox.get(messageData.receiverId);
+    chatData.tickCount = 3;
+    chatListBox.put(messageData.receiverId, chatData);
+    userController.getChatList();
   }
 }

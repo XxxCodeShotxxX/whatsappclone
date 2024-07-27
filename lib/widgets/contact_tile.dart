@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:whatsappclone/models/servermodel/user/user_model.dart';
 
 class ContactTile extends StatefulWidget {
   const ContactTile({
@@ -67,10 +66,10 @@ class _ContactTileState extends State<ContactTile> {
                   : Container(),
             ]),
           ),
-          title: Text(
+          title: const Text(
             'widget.user.userName',
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),

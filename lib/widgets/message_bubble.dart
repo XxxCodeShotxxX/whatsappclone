@@ -5,21 +5,24 @@ import 'package:intl/intl.dart';
 
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
-    super.key,
+    Key? key,
     required this.isSenderByCurrentUser,
     required this.messageContent,
-    required this.messageStatus,
     required this.messageDate,
     required this.isImage,
     this.imagePath,
     this.imageName,
-  });
+    this.isOpened = false,
+    this.isReceived = false,
+  }) : super(key: key);
+
   final bool isSenderByCurrentUser;
   final bool isImage;
   final String? imagePath;
   final String? imageName;
   final String messageContent;
-  final int messageStatus;
+  final bool isOpened;
+  final bool isReceived;
   final DateTime messageDate;
 
   @override
@@ -30,64 +33,79 @@ class MessageBubble extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.8,
-          maxHeight: MediaQuery.of(context).size.height * 0.5,
         ),
-        child: Stack(children: [
-          Card(
-            elevation: 1,
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
             color: isSenderByCurrentUser
                 ? const Color.fromARGB(255, 225, 252, 196)
                 : Colors.white,
-            child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 10, right: 40, top: 5, bottom: 20),
-                // ignore: prefer_const_constructors
-                child: isSenderByCurrentUser
-                    ? !isImage
-                        ? Text(messageContent,
-                            style: const TextStyle(fontSize: 16))
-                        : Image.file(
-                            File(imagePath!),
-                            fit: BoxFit.contain,
-                          )
-                    : !isImage
-                        ? Text(messageContent,
-                            style: const TextStyle(fontSize: 16))
-                        : Image.network(
-                            "http://192.168.1.69:5000/images/$imageName",
-                            fit: BoxFit.contain,
-                          )),
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 5,
+              ),
+            ],
           ),
-          Positioned(
-            bottom: 4,
-            right: 10,
-            child: Row(
-              children: [
-                Text(DateFormat("hh:ss").format(messageDate),
-                    style: TextStyle(fontSize: 13, color: Colors.grey[600])),
-                const SizedBox(
-                  width: 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (isImage)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.5,
+                      ),
+                      child: isSenderByCurrentUser
+                          ? Image.file(
+                              File(imagePath!),
+                              fit: BoxFit.contain,
+                            )
+                          : Image.network(
+                              imagePath!,
+                              fit: BoxFit.contain,
+                            ),
+                    ),
+                    const SizedBox(height: 5),
+                    if (messageContent.isNotEmpty)
+                      Text(
+                        messageContent, // Caption for the image
+                        style: const TextStyle(
+                            fontSize: 14, color: Colors.black87),
+                      ),
+                  ],
+                )
+              else
+                Text(
+                  messageContent,
+                  style: const TextStyle(fontSize: 16),
                 ),
-                isSenderByCurrentUser
-                    ? messageStatus == 0
-                        ? const Icon(
-                            Icons.error_outline,
-                            size: 20,
-                          )
-                        : messageStatus == 1
-                            ? const Icon(
-                                Icons.done,
-                                size: 20,
-                              )
-                            : const Icon(
-                                Icons.done_all,
-                                size: 20,
-                              )
-                    : Container(),
-              ],
-            ),
-          )
-        ]),
+              const SizedBox(height: 5),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    DateFormat("hh:mm a").format(messageDate),
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  ),
+                  const SizedBox(width: 5),
+                  if (isSenderByCurrentUser)
+                    if (isOpened)
+                      const Icon(Icons.done_all, size: 14.0, color: Colors.blue)
+                    else if (isReceived)
+                      const Icon(Icons.done_all, size: 14.0)
+                    else
+                      const Icon(Icons.check, size: 14.0)
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

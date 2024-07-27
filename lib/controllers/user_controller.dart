@@ -1,11 +1,8 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:whatsappclone/handlers/http_handler.dart';
 import 'package:whatsappclone/handlers/sharedpref_handler.dart';
-import 'package:whatsappclone/keys/api_routes.dart';
 import 'package:whatsappclone/keys/db_cnames.dart';
 import 'package:whatsappclone/keys/sharedpref_keys.dart';
 import 'package:whatsappclone/models/localdbmodel/db_chat_list_model.dart';
@@ -16,7 +13,6 @@ import 'package:whatsappclone/repository/user_repo.dart';
 class UserController extends GetxController {
   UserRepo userRepo = UserRepo();
   SharedprefHandler sharedPref = SharedprefHandler();
-  HttpHandler _httpHandler = HttpHandler();
 
   Rx<UserModel> userData = UserModel().obs;
   RxString userId = "".obs;
@@ -84,7 +80,7 @@ class UserController extends GetxController {
     DbUserModel? userData = userBox.get(userId);
 
     if (userData != null) {
-    log("profileImage : " + userData.imagePath);
+    log("profileImage -getUserNameImage- : ${userData.imagePath}");
       return [
         userData.name.isEmpty ? userData.phone.toString() : userData.name,
         userData.imagePath
@@ -93,4 +89,16 @@ class UserController extends GetxController {
       return ["", ""];
     }
   }
+
+
+
+  @override
+  void onInit() {
+    updateUserStatus(true);
+    //usersList();
+    getMyDetails();
+    super.onInit();
+  }
+
+
 }

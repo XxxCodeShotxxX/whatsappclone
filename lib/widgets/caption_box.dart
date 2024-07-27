@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 class CaptionBox extends StatelessWidget {
   const CaptionBox({
-    super.key, this.onTap,
+    super.key, this.onTap, required this.controller,
   });
   final Function()? onTap;
+  final TextEditingController controller ;
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -14,6 +15,7 @@ class CaptionBox extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
         child: TextFormField(
+          controller: controller,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 17,

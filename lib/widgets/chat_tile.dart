@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:whatsappclone/models/servermodel/user/user_model.dart';
-import 'package:whatsappclone/screens/chat_screen.dart';
 import 'package:whatsappclone/widgets/no_user_image.dart';
 
 class ChatTile extends StatelessWidget {
@@ -78,7 +74,7 @@ class ChatTile extends StatelessWidget {
                       decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primary,
                           borderRadius:
-                              BorderRadius.all(Radius.circular(16.0))),
+                              const BorderRadius.all(Radius.circular(16.0))),
                       alignment: Alignment.center,
                       child: Text(
                         unreadCount.toString(),

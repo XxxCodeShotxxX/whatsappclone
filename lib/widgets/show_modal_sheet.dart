@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:whatsappclone/screens/camera/camera_screen.dart';
 import 'package:whatsappclone/screens/camera/image_view_screen.dart';
@@ -6,19 +7,15 @@ import 'package:whatsappclone/widgets/icon_placeholder.dart';
 
 class ShowModalSheet extends StatelessWidget {
   const ShowModalSheet({
-    super.key,
-    required this.context,
-    required this.onSendImage,
+    super.key, required this.userId,
   });
-
-  final BuildContext context;
-  final Function onSendImage;
+  final String userId;
   @override
   Widget build(BuildContext context) {
     return Container(
       color: const Color.fromARGB(0, 0, 0, 0),
-      height: MediaQuery.of(context).size.height / 3,
-      width: MediaQuery.of(context).size.width,
+      height: Get.height / 3,
+      width: Get.width,
       // ignore: prefer_const_constructors
       child: SingleChildScrollView(
         child: Card(
@@ -55,9 +52,7 @@ class ShowModalSheet extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (builder) => CameraScreen(
-                                        onSendImage: onSendImage,
-                                      )));
+                                  builder: (builder) => const CameraScreen()));
                         },
                       ),
                       const IconPlaceholder(
@@ -80,14 +75,10 @@ class ShowModalSheet extends StatelessWidget {
                               source: ImageSource.gallery);
 
                           if (image != null) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (builder) => ImageViewScreen(
-                                          image: image,
-                                          onSendImage: onSendImage,
-                                          pop: 2,
-                                        )));
+                            Get.to(() => ImageViewScreen(
+                                  image: image,
+                                  userId:userId,
+                                ));
                           }
                         },
                       ),
